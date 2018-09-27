@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <title> 1¢ </title>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <link href="https://fonts.googleapis.com/css?family=Roboto+Condensed" rel="stylesheet">
+    <style type="text/css">
+html,body {
+    height: 100%;
+    min-height: 100%;
+    width: 100%;
+    min-width: 100%;
+    margin: 0;
+}
+body {
+    overflow-y: scroll;
+    display: grid;
+}
+main {
+    margin: 0 auto;
+    width: 650px;
+    padding: 20px;
+}
+h1, p {
+    margin: 1em 0 1em 0;
+}
+h1 {
+    text-align: center;
+    font-family: "Roboto Condensed", "Roboto", "Arial", "Open Sans", sans-serif;
+    font-size: 33px;
+    font-weight: normal;
+}
+hr {
+    display: block;
+    width: 40%;
+    height: 1px;
+    background-color: #656565;
+    border: none;
+}
+p {
+    font-family: "Roboto Condensed", "Roboto", "Arial", "Open Sans", sans-serif;
+    font-size: 30px;
+}
+p.center, p.yes, p.no {
+    text-align: center;
+}
+p.yes {
+    background-color: #84dd63;
+    border: 2px solid #6Baa75;
+    padding: 20px;
+}
+p.no {
+    background-color: #ef6461;
+    border: 2px solid #da2c38;
+    padding: 20px;
+}
+input {
+    font-size: inherit;
+}
+#out::after {
+    content: attr(data-after);
+    font-size: 70%;
+    color: #656565;
+}
+    </style>
+</head>
+<body>
+    <main>
+        <h1> Vale a pena pegar 1¢?</h1>
+        <hr>
+        <p> Digamos que você viu uma moeda de 1 centavo na rua. Vale a pena
+            se abaixar para pegá-la? </p>
+        <p> Use a calculadora para conferir: </p>
+        <p class="center"> Quanto você ganha por mês? </p>
+        <p class="center"> R$ <input type="number" id="in" maxlength="10" /> </p>
+        <hr>
+        <p> Você ganha R$ <output id="out" data-after="000">0.00</output> por segundo </p>
+        <p id="res"></p>
+    </main>
+    <script type="text/javascript">
+const input = document.getElementById("in");
+const out = document.getElementById("out");
+const res = document.getElementById("res");
+const MAX = 10;
+
+input.oninput = e => {
+    if(input.value.length > 10)
+        input.value = input.value.slice(0,10);
+    const v = +input.value || 0;
+    const sec = (((v / 30) / 24) / 60) / 60;
+    format(sec);
+    if(input.value.length <= 0) {
+        res.className = "";
+        res.innerText = "";
+    } else if(sec < 0.01) {
+        res.className = "yes";
+        res.innerText =
+    "Sim, vale a pena! Você estará ganhando mais no\
+    segundo gasto pra pegar a moeda do que seu salário\
+    te paga por segundo."
+    } else {
+        res.className = "no";
+        res.innerText = "Não vale seu tempo! Continue andando!";
+    }
+};
+
+function format(t) {
+    const v = t * 100;
+    if(!v) {
+        out.innerText = "0.00";
+        out.dataset.after = "000";
+    } else {
+        const k = ~~v/100;
+        if(k === ~~k) out.innerText = k + ".00";
+        else if(k*10 === ~~(k*10)) out.innerText = k + "0"
+        else out.innerText = k;
+
+        const x = v+"";
+        if(x.indexOf(".") > 0)
+            out.dataset.after = x.split(".")[1]
+                                .slice(0,3)
+                                .padEnd(3,"0");
+        else
+            out.dataset.after = "000";
+    }
+}
+
+input.onkeydown = e => {
+    if(e.key.length === 1 && e.key.replace(/[0-9]/g, "").length > 0)
+        e.preventDefault();
+};
+    </script>
+</body>
+</html>
